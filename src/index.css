@@ -11,3 +11,17 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.imagen-encabezado {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+}
+
+.footer {
+  background-color: #1F4604; /* Fondo verde */
+  min-height: min-content;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+}
