@@ -44,3 +44,8 @@
   .custom-search-input {
     width: 450px;
   }
+  
+  .center-label {
+    text-align: left;
+    ;
+  }

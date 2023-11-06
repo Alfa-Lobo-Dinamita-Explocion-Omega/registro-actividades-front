@@ -2,13 +2,16 @@ import React from 'react';
 import './styles/styles.css';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-
+import axios from 'axios';
+import { guardarProfesor } from '../../services/RegistroServices';
 
 class FormularioRegistro extends React.Component {
   constructor() {
     super();
     this.state = {
-      fields: {},
+      fields: {
+
+      },
       errors: {}
     }
 
@@ -126,28 +129,26 @@ class FormularioRegistro extends React.Component {
         <div id="register">
           <h3>Registro Docente</h3>
           <div>
-
             <Form.Group widths="four" style={{ display: "flex", flexDirection: "row", alignItems: "center", }}>
               <Form.Control type="text" placeholder="Ingrese el numero de cedula" className="custom-search-input" />
               <Button variant="primary" >Buscar</Button>{' '}
             </Form.Group>
-
-
           </div>
+          
           <form method="post" name="userRegistrationForm" onSubmit={this.submituserRegistrationForm} >
-            <label>Nombre:</label>
+            <label className="center-label">Nombre:</label>
             <input type="text" className="custom-search-input" name="name" value={this.state.fields.name} onChange={this.handleChange} />
             <div className="errorMsg">{this.state.errors.name}</div>
-            <label>Apellido:</label>
+            <label className="center-label" >Apellido:</label>
             <input type="text" name="lastName"className="custom-search-input" value={this.state.fields.lastName} onChange={this.handleChange} />
             <div className="errorMsg">{this.state.errors.lastName}</div>
-            <label>Email:</label>
+            <label className="center-label" >Email:</label>
             <input type="text" name="email" className="custom-search-input" value={this.state.fields.email} onChange={this.handleChange} />
             <div className="errorMsg">{this.state.errors.email}</div>
-            <label>N° identificacion:</label>
+            <label className="center-label">N° identificacion:</label>
             <input type="text" name="idDocument"className="custom-search-input"  value={this.state.fields.idDocument} onChange={this.handleChange} />
             <div className="errorMsg">{this.state.errors.idDocument}</div>
-            <label>Password:</label>
+            <label className="center-label">password:</label>
             <input type="password" name="password" className="custom-search-input" value={this.state.fields.password} onChange={this.handleChange} />
             <div className="errorMsg">{this.state.errors.password}</div>
             <input type="submit" className="button" value="Guardar" />
