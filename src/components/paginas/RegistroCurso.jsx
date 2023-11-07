@@ -2,12 +2,18 @@ import React from 'react';
 import './styles/styles.css';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import { guardarCurso } from '../../services/RegistroServices';
+
 
 class RegistroCurso extends React.Component {
   constructor() {
     super();
     this.state = {
-      fields: {},
+      fields: {
+        courseCode: '',
+        name: '',
+        programType: '',
+      },
       errors: {}
     }
 
@@ -17,26 +23,42 @@ class RegistroCurso extends React.Component {
   };
 
   handleChange(e) {
-    let fields = this.state.fields;
-    fields[e.target.name] = e.target.value;
-    this.setState({
-      fields
-    });
-
+    const { name, value } = e.target;
+    this.setState((prevState) => ({
+      fields: {
+        ...prevState.fields,
+        [name]: value,
+      }
+    }));
   }
 
-  submituserRegistrationForm(e) {
+  async submituserRegistrationForm(e) {
     e.preventDefault();
     if (this.validateForm()) {
-      let fields = {};
-      fields["idCurso"] = "";
-      fields["nameCurso"] = "";
-      fields["dependencia"] = "";
-      fields["semestre"] = "";
-      this.setState({ fields: fields });
-      alert("Form submitted");
-    }
+      const userData = this.state.fields;
+      console.log('Datos del formulario:', userData);
+      await guardarCurso(
+        userData,
+      (response) => {
+        console.log(response.data);
+        alert('Datos guardados con éxito');
+      },
+      (error) => {
+        console.error(error);
+        alert('error al guardar los datos');
 
+      }
+      );
+      this.setState({
+        fields: {
+          courseCode: '',
+          name: '',
+          programType: '',
+        },
+        errors: {},
+      });
+    }
+  
   }
 
   validateForm() {
@@ -45,36 +67,22 @@ class RegistroCurso extends React.Component {
     let errors = {};
     let formIsValid = true;
 
-    if (!fields["idCurso"]) {
+    if (!fields["courseCode"]) {
       formIsValid = false;
-      errors["idCurso"] = "*Por favor ingrese un codigo del curso";
+      errors["courseCode"] = "*Por favor ingrese un codigo del curso";
     }
 
-    if (typeof fields["idCurso"] !== "undefined") {
-      if (!fields["idCurso"].match(/^[0-9]{4}$/)) {
+    if (typeof fields["courseCode"] !== "undefined") {
+      if (!fields["courseCode"].match(/^[0-9]{4}$/)) {
         formIsValid = false;
-        errors["idCurso"] = "*Por favor ingrese codigo del curso valido.";
+        errors["courseCode"] = "*Por favor ingrese codigo del curso valido.";
       }
     }
 
-    if (!fields["nameCurso"]) {
+    if (!fields["name"]) {
       formIsValid = false;
-      errors["nameCurso"] = "*Por favor ingrese un nombre del curso";
+      errors["name"] = "*Por favor ingrese un nombre del curso";
     }
-
-
-    if (!fields["semestre"]) {
-      formIsValid = false;
-      errors["semestre"] = "*Por favor ingrese un semestre.";
-    }
-
-    if (typeof fields["semestre"] !== "undefined") {
-      if (!fields["semestre"].match(/^[0-9]{4}$/)) {
-        formIsValid = false;
-        errors["semestre"] = "*Por favor ingrese un semestre valido.";
-      }
-    }
-
 
     this.setState({
       errors: errors
@@ -98,19 +106,18 @@ class RegistroCurso extends React.Component {
           
           <form method="post" name="userRegistrationForm" onSubmit={this.submituserRegistrationForm} >
             <label className="center-label">Codigo del Curso:</label>
-            <input type="text" className="custom-search-input" name="idCurso" value={this.state.fields.name} onChange={this.handleChange} />
-            <div className="errorMsg">{this.state.errors.idCurso}</div>
+            <input type="text" className="custom-search-input" name="courseCode" value={this.state.fields.courseCode} onChange={this.handleChange} />
+            <div className="errorMsg">{this.state.errors.courseCode}</div>
             <label className="center-label" >Nombre del Curso:</label>
-            <input type="text" name="nameCurso"className="custom-search-input" value={this.state.fields.nameCurso} onChange={this.handleChange} />
+            <input type="text" name="name"className="custom-search-input" value={this.state.fields.name} onChange={this.handleChange} />
+            <div className="errorMsg">{this.state.errors.name}</div>
             <label className="center-label">Dependencia:</label>
-            <select name="dependencia" className="custom-search-input"  style={{ height: "40px" }} value={this.state.fields.dependencia} onChange={this.handleChange}>
-            <option value="Pregrado">Pregrado</option>
-            <option value="Postgrado">Postgrado</option>
+            <select name="programType" className="custom-search-input"  style={{ height: "40px" }} value={this.state.fields.programType} onChange={this.handleChange}>
+            <option value="selecionar">SELECIONAR</option>
+            <option value="PREGRADO">PREGRADO</option>
+            <option value="POSGRADO">POSGRADO</option>
             </select>
             <div style={{ marginBottom: "20px" }}></div>
-            <label className="center-label">Semestre:</label>
-            <input type="text" name="semestre"className="custom-search-input"  value={this.state.fields.semestre} onChange={this.handleChange} />
-            <div className="errorMsg">{this.state.errors.semestre}</div>
             <input type="submit" className="button" value="Guardar" />
             <input type="submit" className="button" value="Eliminar" />
           </form>

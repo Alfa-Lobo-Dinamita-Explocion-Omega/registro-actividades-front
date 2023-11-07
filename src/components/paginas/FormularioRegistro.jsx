@@ -2,15 +2,19 @@ import React from 'react';
 import './styles/styles.css';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import axios from 'axios';
 import { guardarProfesor } from '../../services/RegistroServices';
+
 
 class FormularioRegistro extends React.Component {
   constructor() {
     super();
     this.state = {
       fields: {
-
+        name: '',
+        lastName: '',
+        email: '',
+        idDocument: '',
+        password: '',
       },
       errors: {}
     }
@@ -21,27 +25,43 @@ class FormularioRegistro extends React.Component {
   };
 
   handleChange(e) {
-    let fields = this.state.fields;
-    fields[e.target.name] = e.target.value;
-    this.setState({
-      fields
-    });
-
+    const { name, value } = e.target;
+    this.setState((prevState) => ({
+      fields: {
+        ...prevState.fields,
+        [name]: value,
+      }
+    }));
   }
 
-  submituserRegistrationForm(e) {
+  async submituserRegistrationForm(e) {
     e.preventDefault();
     if (this.validateForm()) {
-      let fields = {};
-      fields["name"] = "";
-      fields["lastName"] = "";
-      fields["email"] = "";
-      fields["idDocument"] = "";
-      fields["password"] = "";
-      this.setState({ fields: fields });
-      alert("Form submitted");
-    }
+      const userData = this.state.fields;
+      await guardarProfesor(
+        userData,
+      (response) => {
+        console.log(response.data);
+        alert('Datos guardados con éxito');
+      },
+      (error) => {
+        console.error(error);
+        alert('error al guardar los datos');
 
+      }
+      );
+      this.setState({
+        fields: {
+          name: '',
+          lastName: '',
+          email: '',
+          idDocument: '',
+          password: '',
+        },
+        errors: {},
+      });
+    }
+  
   }
 
   validateForm() {
@@ -74,11 +94,6 @@ class FormularioRegistro extends React.Component {
       }
     }
 
-    if (!fields["email"]) {
-      formIsValid = false;
-      errors["email"] = "*Por favor ingrese su email.";
-    }
-
     if (typeof fields["email"] !== "undefined") {
       //regular expression for email validation
       var pattern = new RegExp(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i);
@@ -88,21 +103,24 @@ class FormularioRegistro extends React.Component {
       }
     }
 
-    if (!fields["idDocument"]) {
-      formIsValid = false;
-      errors["idDocument"] = "*Por favor ingrese su numero de identificacion.";
-    }
 
     if (typeof fields["idDocument"] !== "undefined") {
-      if (!fields["idDocument"].match(/^[0-9]{4}$/)) {
+      if (!fields["idDocument"].match(/^[0-9]{4,12}$/)) {
         formIsValid = false;
-        errors["idDocument"] = "*Por favor ingrese un numero valido.";
+        errors["idDocument"] = "*Por favor ingrese un numero valido que tenga minimo 4 numeros y maximo 12 numeros.";
       }
     }
 
-    if (!fields["password"]) {
-      formIsValid = false;
-      errors["password"] = "*Por favor ingrese una contraseña.";
+
+    if (typeof fields["password"] !== "undefined") {
+      const value = fields["password"];
+      const letters = value.replace(/[^a-zA-Z]/g, '');
+      const numbers = value.replace(/[^0-9]/g, '');
+    
+      if (value.length !== 6 || letters.length !== 3 || numbers.length !== 3) {
+        formIsValid = false;
+        errors["password"] = "*Por favor ingrese una contraseña de 6 carateres con 3 letras y 3 numeros.";
+      }
     }
     /*
     if (typeof fields["password"] !== "undefined") {

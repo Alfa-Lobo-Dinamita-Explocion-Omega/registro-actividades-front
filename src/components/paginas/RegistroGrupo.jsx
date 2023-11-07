@@ -1,14 +1,21 @@
 import React from 'react';
 import './styles/styles.css';
-
-
-
+import { guardarGrupo } from '../../services/RegistroServices';
 
 class RegistroGrupo extends React.Component {
   constructor() {
     super();
     this.state = {
-      fields: {},
+      fields: { 
+      courseCode: '',
+      groupNumber: '',
+      teacherIdDocument: '',
+      modality: '',
+      schedule: '',
+      semester: '',
+      horario: '',
+      dia: '',
+    },
       errors: {}
     }
 
@@ -18,29 +25,69 @@ class RegistroGrupo extends React.Component {
   };
 
   handleChange(e) {
-    let fields = this.state.fields;
-    fields[e.target.name] = e.target.value;
-    this.setState({
-      fields
+    const { name, value } = e.target;
+  
+    this.setState((prevState) => {
+      let fields = prevState.fields;
+      if (name === 'dia') {
+        if (e.target.checked) {
+          fields.dia += value;
+        } 
+        
+      } else if (name === 'horaInicio' || name === 'horaFinal') {
+        if (fields.horario) {
+          let [horas] = fields.horario.split(' ');
+          if (!horas) horas = '';
+          if (name === 'horaInicio') {
+            horas = value + '-' + (horas.split('-')[1] || '');
+          } else {
+            horas = (horas.split('-')[0] || '') + '-' + value;
+          }
+          fields.horario = horas;
+        } else {
+          fields.horario = value;
+        }
+      } else {
+        fields[name] = value;
+      }
+      return { fields };
     });
-
   }
 
-  submituserRegistrationForm(e) {
+  async submituserRegistrationForm(e) {
     e.preventDefault();
     if (this.validateForm()) {
-      let fields = {};
-      fields["idCurso"] = "";
-      fields["numeroGrupo"] = "";
-      fields["modalidad"] = "";
-      fields["horario"] = "";
-      fields["semestre"] = "";
-      fields["cedula"] = "";
-      this.setState({ fields: fields });
-      alert("Form submitted");
-    }
+      const userData = this.state.fields;
+      console.log('Datos del formulario:', userData);
+      await guardarGrupo(
+        userData,
+      (response) => {
+        console.log(response.data);
+        alert('Datos guardados con éxito');
+      },
+      (error) => {
+        console.error(error);
+        alert('error al guardar los datos');
 
+      }
+      );
+      this.setState({
+        fields: {
+          courseCode: '',
+          groupNumber: '',
+          teacherIdDocument: '',
+          modality: '',
+          schedule: '',
+          semester: '',
+          horario: '',
+          dia: '',
+        },
+        errors: {},
+      });
+    }
+  
   }
+
 
   validateForm() {
 
@@ -48,40 +95,28 @@ class RegistroGrupo extends React.Component {
     let errors = {};
     let formIsValid = true;
 
-    if (!fields["idCurso"]) {
+    if (!fields["courseCode"]) {
       formIsValid = false;
-      errors["idCurso"] = "*Por favor ingrese un codigo del curso";
+      errors["courseCode"] = "*Por favor ingrese un codigo del curso";
     }
 
-    if (typeof fields["numeroGrupo"] !== "undefined") {
-      if (!fields["numeroGrupo"].match(/^[0-9]{1}$/)) {
+  
+    if (!fields["groupNumber"]) {
+      formIsValid = false;
+      errors["groupNumber"] = "*Por favor ingrese un codigo del curso";
+    }
+
+    if (typeof fields["teacherIdDocument"] !== "undefined") {
+      if (!fields["teacherIdDocument"].match(/^[0-9]{4,12}$/)) {
         formIsValid = false;
-        errors["numeroGrupo"] = "*Por favor ingrese numero de grupo valido.";
+        errors["teacherIdDocument"] = "*Por favor ingrese un numero valido de un profesor que se encuentre registrado.";
       }
     }
 
-    if (!fields["cedula"]) {
+
+    if (!fields["semester"]) {
       formIsValid = false;
-      errors["cedula"] = "*Por favor ingrese un numero de identificacion de un profesor";
-    }
-
-    if (typeof fields["cedula"] !== "undefined") {
-      if (!fields["cedula"].match(/^[0-9]{4}$/)) {
-        formIsValid = false;
-        errors["cedula"] = "*Por favor ingrese numero identificacion valido.";
-      }
-    }
-
-    if (!fields["semestre"]) {
-      formIsValid = false;
-      errors["semestre"] = "*Por favor ingrese un semestre.";
-    }
-
-    if (typeof fields["semestre"] !== "undefined") {
-      if (!fields["semestre"].match(/^[0-9]{4}$/)) {
-        formIsValid = false;
-        errors["semestre"] = "*Por favor ingrese un semestre valido.";
-      }
+      errors["semester"] = "*Por favor ingrese un semestre.";
     }
 
 
@@ -100,74 +135,78 @@ class RegistroGrupo extends React.Component {
           <h3>Registro Grupo</h3>
           <form method="post" name="userRegistrationForm" onSubmit={this.submituserRegistrationForm}>
             <label className="center-label">Codigo del Curso:</label>
-            <input type="text" className="custom-search-input" name="idCurso" value={this.state.fields.idCurso} onChange={this.handleChange} />
-            <div className="errorMsg">{this.state.errors.idCurso}</div>
+            <input type="text" className="custom-search-input" name="courseCode" value={this.state.fields.courseCode} onChange={this.handleChange} />
+            <div className="errorMsg">{this.state.errors.courseCode}</div>
             <label className="center-label">N° identificacion profesor:</label>
-            <input type="text" className="custom-search-input" name="cedula" value={this.state.fields.cedula} onChange={this.handleChange} />
-            <div className="errorMsg">{this.state.errors.cedula}</div>
+            <input type="text" className="custom-search-input" name="teacherIdDocument" value={this.state.fields.teacherIdDocument} onChange={this.handleChange} />
+            <div className="errorMsg">{this.state.errors.teacherIdDocument}</div>
             <label className="center-label" >Numero del Grupo:</label>
-            <input type="text" name="numeroGrupo" className="custom-search-input" value={this.state.fields.numeroGrupo} onChange={this.handleChange} />
+            <input type="text" name="groupNumber" className="custom-search-input" value={this.state.fields.groupNumber} onChange={this.handleChange} />
+            <div className="errorMsg">{this.state.errors.groupNumber}</div>
             <label className="center-label">Modalidad:</label>
-            <select name="modalidad" className="custom-search-input"  style={{ height: "40px" }} value={this.state.fields.modalidad} onChange={this.handleChange}>
-              <option value="Pregrado">Presencial</option>
-              <option value="Postgrado">Virtual</option>
+            <select name="modality" className="custom-search-input"  style={{ height: "40px" }} value={this.state.fields.modality} onChange={this.handleChange}>
+             <option value="">SELECIONE</option>
+              <option value="PRESENCIAL">PRESENCIAL</option>
+              <option value="VIRTUAL">VIRTUAL</option>
             </select>
             <div style={{ marginBottom: "20px" }}></div>
             <label className="center-label">Días de Clases:</label>
             <div className="custom-search-input" style={{ display: "flex" }}>
-             <label> <input type="checkbox" name="lunes" value="Lunes" /> Lunes </label>
-              <label> <input type="checkbox" name="martes" value="Martes" /> Martes </label>
-              <label> <input type="checkbox" name="miercoles" value="Miércoles" /> Miércoles </label>
-              <label> <input type="checkbox" name="jueves" value="Jueves" /> Jueves </label>
-              <label> <input type="checkbox" name="viernes" value="Viernes" /> Viernes</label>
-              <label> <input type="checkbox" name="sabado" value="Sábado" /> Sábado </label>
-              <label> <input type="checkbox" name="domingo" value="Domingo" /> Domingo </label>
+              <label> <input type="checkbox" name="dia" value="L" /> Lunes </label>
+              <label> <input type="checkbox" name="dia" value="M" /> Martes </label>
+              <label> <input type="checkbox" name="dia" value="W" /> Miércoles </label>
+              <label> <input type="checkbox" name="dia" value="J" /> Jueves </label>
+              <label> <input type="checkbox" name="dia" value="V" /> Viernes</label>
+              <label> <input type="checkbox" name="dia" value="S" /> Sábado </label>
+              <label> <input type="checkbox" name="dia" value="D" /> Domingo </label>
             </div>
             <div className="custom-search-input" style={{ display: "flex", justifyContent: "center" }}>
               <div>
                 <label className="center-label">Hora de inicio:</label>
                 <select name="horaInicio" style={{ height: "40px",  width: "50px" ,marginLeft: "-40px"}} value={this.state.fields.horaInicio} onChange={this.handleChange}>
-                  <option value="horaInicio">6</option>
-                  <option value="horaInicio">7</option>
-                  <option value="horaInicio">8</option>
-                  <option value="horaInicio">9</option>
-                  <option value="horaInicio">10</option>
-                  <option value="horaInicio">11</option>
-                  <option value="horaInicio">12</option>
-                  <option value="horaInicio">13</option>
-                  <option value="horaInicio">14</option>
-                  <option value="horaInicio">15</option>
-                  <option value="horaInicio">16</option>
-                  <option value="horaInicio">17</option>
-                  <option value="horaInicio">18</option>
-                  <option value="horaInicio">19</option>
-                  <option value="horaInicio">20</option>
+                <option value="--">----</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12">12</option>
+                  <option value="13">13</option>
+                  <option value="14">14</option>
+                  <option value="15">15</option>
+                  <option value="16">16</option>
+                  <option value="17">17</option>
+                  <option value="18">18</option>
+                  <option value="19">19</option>
+                  <option value="20">20</option>
                 </select>
               </div>
               <div>
                 <label className="center-label">Hora de Finalización:</label>
                 <select name="horaFinal" style={{ height: "40px", width: "50px", marginLeft: "-80px"}} value={this.state.fields.horaFinal} onChange={this.handleChange}>
-                  <option value="horaInicio">8</option>
-                  <option value="horaInicio">9</option>
-                  <option value="horaInicio">10</option>
-                  <option value="horaInicio">11</option>
-                  <option value="horaInicio">12</option>
-                  <option value="horaInicio">13</option>
-                  <option value="horaInicio">14</option>
-                  <option value="horaInicio">15</option>
-                  <option value="horaInicio">16</option>
-                  <option value="horaInicio">17</option>
-                  <option value="horaInicio">18</option>
-                  <option value="horaInicio">19</option>
-                  <option value="horaInicio">20</option>
-                  <option value="horaInicio">21</option>
-                  <option value="horaInicio">22</option>
+                <option value="--">-----</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12">12</option>
+                  <option value="13">13</option>
+                  <option value="14">14</option>
+                  <option value="15">15</option>
+                  <option value="16">16</option>
+                  <option value="17">17</option>
+                  <option value="18">18</option>
+                  <option value="19">19</option>
+                  <option value="20">20</option>
+                  <option value="21">21</option>
+                  <option value="22">22</option>
                 </select>
               </div>
             </div>
             <label className="center-label">Semestre:</label>
-            <input type="text" name="semestre" className="custom-search-input" value={this.state.fields.semestre} onChange={this.handleChange} />
-            <div className="errorMsg">{this.state.errors.semestre}</div>
+            <input type="text" name="semester" className="custom-search-input" value={this.state.fields.semester} onChange={this.handleChange} />
+            <div className="errorMsg">{this.state.errors.semester}</div>
             <input type="submit" className="button" value="Guardar" />
           </form>
         </div>

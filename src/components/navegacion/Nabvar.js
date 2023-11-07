@@ -2,30 +2,7 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
-import { Link } from 'react-router-dom';
 
-const links = [
-  {
-    name: "Inicio",
-    href: "/Inicio",
-  },
-  {
-    name: "Registro docente",
-    href: "/FormularioRegistro",
-  },
-  {
-    name: "Registro grupo",
-    href: "/RegistroGrupo",
-  },
-  {
-    name: "Registro actividad",
-    href: "/RegistroActividades",
-  },
-  {
-    name: "Registro curso",
-    href: "/RegistroCurso",
-  },
-];
 
 const Nabvar = () => {
 
