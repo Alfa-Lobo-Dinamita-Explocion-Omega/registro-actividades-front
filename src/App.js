@@ -10,24 +10,26 @@ import RegistroGrupo from './components/paginas/RegistroGrupo';
 import encavesado from './assets/encavesado.png';
 
 
-
 function App() {
   return (
     <div className="App">
       <Router>
-      <div> <img src={encavesado} className="encavesado"/> </div>
-      
-      <Nabvar></Nabvar>
         <Routes>
-       <Route path="/Inicio" element={<Inicio/>}/>
-       <Route path="/FormularioRegistro" element={<FormularioRegistro/>}/>
-       <Route path="/RegistroActividades" element={<RegistroActividades/>}/>
-       <Route path="/RegistroCurso" element={<RegistroCurso/>}/>
-       <Route path="/RegistroGrupo" element={<RegistroGrupo/>}/>
+          <Route path="/Inicio" element={<Inicio/>}/>
+          <Route path="/*" element={
+            <>
+            <div> <img src={encavesado} className="encavesado"/> </div>
+
+              <Nabvar/>
+              <Route path="/FormularioRegistro" element={<FormularioRegistro/>}/>
+              <Route path="/RegistroActividades" element={<RegistroActividades/>}/>
+              <Route path="/RegistroCurso" element={<RegistroCurso/>}/>
+              <Route path="/RegistroGrupo" element={<RegistroGrupo/>}/>
+              <Footer/>
+            </>
+          }/>
         </Routes>
-      <Footer></Footer>
       </Router>
- 
     </div>
   );
 }

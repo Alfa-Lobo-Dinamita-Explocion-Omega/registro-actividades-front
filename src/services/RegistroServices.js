@@ -31,3 +31,13 @@ export const guardarProfesor = async (data, successCallback, errorCallback) => {
     };
     await axios.request(options).then(successCallback).catch(errorCallback);
   };
+
+  export const login = async (data, successCallback, errorCallback) => {
+    const options = {
+      method: "POST",
+      url: `${Grupo_API_BASE_URL}/auth/login`,
+      headers: { "Content-type": "application/json" },
+      data,
+    };
+    await axios.request(options).then(successCallback).catch(errorCallback);
+  };

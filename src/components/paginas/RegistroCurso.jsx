@@ -45,7 +45,7 @@ class RegistroCurso extends React.Component {
       },
       (error) => {
         console.error(error);
-        alert('error al guardar los datos');
+        alert('El codigo de curso ya se encuentra registrado por favor ingrese uno diferente');
 
       }
       );

@@ -46,7 +46,7 @@ class FormularioRegistro extends React.Component {
       },
       (error) => {
         console.error(error);
-        alert('error al guardar los datos');
+        alert('El numero de documento o email ya se encuentran registrados');
 
       }
       );

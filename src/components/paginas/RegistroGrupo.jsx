@@ -6,6 +6,7 @@ class RegistroGrupo extends React.Component {
   constructor() {
     super();
     this.state = {
+      dia: [],
       fields: { 
       courseCode: '',
       groupNumber: '',
@@ -13,8 +14,6 @@ class RegistroGrupo extends React.Component {
       modality: '',
       schedule: '',
       semester: '',
-      horario: '',
-      dia: '',
     },
       errors: {}
     }
@@ -24,29 +23,33 @@ class RegistroGrupo extends React.Component {
 
   };
 
+  handleCheckboxChange = (event) => {
+    const { dia  } = this.state;
+    if (event.target.checked) {
+      dia.push(event.target.value);
+    } else {
+      const index = dia.indexOf(event.target.value);
+      if (index > -1) {
+        dia.splice(index, 1);
+      }
+    }
+    this.setState({ dia });
+  }
+
   handleChange(e) {
     const { name, value } = e.target;
   
-    this.setState((prevState) => {
+   this.setState((prevState) => {
       let fields = prevState.fields;
-      if (name === 'dia') {
-        if (e.target.checked) {
-          fields.dia += value;
-        } 
-        
-      } else if (name === 'horaInicio' || name === 'horaFinal') {
-        if (fields.horario) {
-          let [horas] = fields.horario.split(' ');
-          if (!horas) horas = '';
-          if (name === 'horaInicio') {
-            horas = value + '-' + (horas.split('-')[1] || '');
-          } else {
-            horas = (horas.split('-')[0] || '') + '-' + value;
-          }
-          fields.horario = horas;
+      let dia=prevState.dia.join('');
+      if (name === 'horaInicio' || name === 'horaFinal') {
+        let horas = fields.schedule ? fields.schedule.split(' ') : [dia, ' '];
+        if (name === 'horaInicio') {
+          horas[1] = value + (horas[1].split('-')[1] ? '-' + horas[1].split('-')[1] : '');
         } else {
-          fields.horario = value;
+          horas[1] = (horas[1].split('-')[0] || '') + '-' + value;
         }
+        fields.schedule = horas.join(' ');
       } else {
         fields[name] = value;
       }
@@ -79,8 +82,6 @@ class RegistroGrupo extends React.Component {
           modality: '',
           schedule: '',
           semester: '',
-          horario: '',
-          dia: '',
         },
         errors: {},
       });
@@ -113,10 +114,22 @@ class RegistroGrupo extends React.Component {
       }
     }
 
+    if (!fields["modality"]) {
+      formIsValid = false;
+      errors["modality"] = "*Por favor seleccione una modalidad.";
+    }
+
 
     if (!fields["semester"]) {
       formIsValid = false;
       errors["semester"] = "*Por favor ingrese un semestre.";
+    } else {
+      const semesterFormat = /^\d{4}-[1-2]$/;
+    
+      if (!semesterFormat.test(fields["semester"])) {
+        formIsValid = false;
+        errors["semester"] = "*Por favor ingrese un semestre válido. Ejemplo: 2023-1";
+      }
     }
 
 
@@ -149,16 +162,17 @@ class RegistroGrupo extends React.Component {
               <option value="PRESENCIAL">PRESENCIAL</option>
               <option value="VIRTUAL">VIRTUAL</option>
             </select>
+            <div className="errorMsg">{this.state.errors.modality}</div>
             <div style={{ marginBottom: "20px" }}></div>
             <label className="center-label">Días de Clases:</label>
             <div className="custom-search-input" style={{ display: "flex" }}>
-              <label> <input type="checkbox" name="dia" value="L" /> Lunes </label>
-              <label> <input type="checkbox" name="dia" value="M" /> Martes </label>
-              <label> <input type="checkbox" name="dia" value="W" /> Miércoles </label>
-              <label> <input type="checkbox" name="dia" value="J" /> Jueves </label>
-              <label> <input type="checkbox" name="dia" value="V" /> Viernes</label>
-              <label> <input type="checkbox" name="dia" value="S" /> Sábado </label>
-              <label> <input type="checkbox" name="dia" value="D" /> Domingo </label>
+              <label> <input type="checkbox" value="L" onChange={this.handleCheckboxChange} /> Lunes </label>
+              <label> <input type="checkbox" value="M" onChange={this.handleCheckboxChange} /> Martes </label>
+              <label> <input type="checkbox" value="W" onChange={this.handleCheckboxChange} /> Miércoles </label>
+              <label> <input type="checkbox" value="J" onChange={this.handleCheckboxChange} /> Jueves </label>
+              <label> <input type="checkbox" value="V" onChange={this.handleCheckboxChange} /> Viernes</label>
+              <label> <input type="checkbox" value="S" onChange={this.handleCheckboxChange} /> Sábado </label>
+              <label> <input type="checkbox" value="D" onChange={this.handleCheckboxChange} /> Domingo </label>
             </div>
             <div className="custom-search-input" style={{ display: "flex", justifyContent: "center" }}>
               <div>
