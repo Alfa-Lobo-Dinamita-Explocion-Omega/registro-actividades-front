@@ -8,27 +8,37 @@ import RegistroActividades from './components/paginas/RegistroActividades';
 import RegistroCurso from './components/paginas/RegistroCurso';
 import RegistroGrupo from './components/paginas/RegistroGrupo';
 import encavesado from './assets/encavesado.png';
+import { useLocation } from 'react-router-dom';
+import IngresarActividades from './components/paginas/IngresarActividades';
 
+
+
+
+function Content() {
+  let location = useLocation();
+
+  return (
+    <>
+    {location.pathname !== "/Inicio" && <div> <img src={encavesado} className="encavesado"/> </div>}
+    {location.pathname !== "/Inicio" && <Nabvar/>}
+    <Routes>
+      <Route path="/Inicio" element={<Inicio/>}/>
+      <Route path="/FormularioRegistro" element={<FormularioRegistro/>}/>
+      <Route path="/RegistroActividades" element={<RegistroActividades/>}/>
+      <Route path="/RegistroCurso" element={<RegistroCurso/>}/>
+      <Route path="/RegistroGrupo" element={<RegistroGrupo/>}/>
+      <Route path="/IngresarActividades/:id" element={<IngresarActividades/>}/>
+    </Routes>
+    {location.pathname !== "/Inicio" && <Footer/>}
+  </>
+  );
+}
 
 function App() {
   return (
     <div className="App">
       <Router>
-        <Routes>
-          <Route path="/Inicio" element={<Inicio/>}/>
-          <Route path="/*" element={
-            <>
-            <div> <img src={encavesado} className="encavesado"/> </div>
-
-              <Nabvar/>
-              <Route path="/FormularioRegistro" element={<FormularioRegistro/>}/>
-              <Route path="/RegistroActividades" element={<RegistroActividades/>}/>
-              <Route path="/RegistroCurso" element={<RegistroCurso/>}/>
-              <Route path="/RegistroGrupo" element={<RegistroGrupo/>}/>
-              <Footer/>
-            </>
-          }/>
-        </Routes>
+        <Content/>
       </Router>
     </div>
   );

@@ -146,13 +146,14 @@ class FormularioRegistro extends React.Component {
       <div id="main-registration-container">
         <div id="register">
           <h3>Registro Docente</h3>
-          <div>
-            <Form.Group widths="four" style={{ display: "flex", flexDirection: "row", alignItems: "center", }}>
+          {/*
+            <div>
+              <Form.Group widths="four" style={{ display: "flex", flexDirection: "row", alignItems: "center", }}>
               <Form.Control type="text" placeholder="Ingrese el numero de cedula" className="custom-search-input" />
               <Button variant="primary" >Buscar</Button>{' '}
-            </Form.Group>
-          </div>
-          
+              </Form.Group>
+            </div>
+          */}
           <form method="post" name="userRegistrationForm" onSubmit={this.submituserRegistrationForm} >
             <label className="center-label">Nombre:</label>
             <input type="text" className="custom-search-input" name="name" value={this.state.fields.name} onChange={this.handleChange} />
@@ -170,7 +171,7 @@ class FormularioRegistro extends React.Component {
             <input type="password" name="password" className="custom-search-input" value={this.state.fields.password} onChange={this.handleChange} />
             <div className="errorMsg">{this.state.errors.password}</div>
             <input type="submit" className="button" value="Guardar" />
-            <input type="submit" className="button" value="Inhabilitar" />
+            {/*<input type="submit" className="button" value="Inhabilitar" />*/}
           </form>
         </div>
       </div>

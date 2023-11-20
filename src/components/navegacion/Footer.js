@@ -4,8 +4,8 @@ import footer from '../../assets/footer.png';
 
 function Footer() {
     return (
-    <div>
-        <img src={footer} className="footer"/>
+      <div className="footer-container">
+      <img src={footer} className="footer"/>
     </div>
   )
 }

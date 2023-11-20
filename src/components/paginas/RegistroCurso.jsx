@@ -97,12 +97,14 @@ class RegistroCurso extends React.Component {
       <div id="main-registration-container">
         <div id="register">
           <h3>Registro Curso</h3>
+         {/*
           <div>
             <Form.Group widths="four" style={{ display: "flex", flexDirection: "row", alignItems: "center", }}>
               <Form.Control type="text" placeholder="Ingrese el codigo del curso" className="custom-search-input" />
               <Button variant="primary" >Buscar</Button>{' '}
             </Form.Group>
           </div>
+        */}
           
           <form method="post" name="userRegistrationForm" onSubmit={this.submituserRegistrationForm} >
             <label className="center-label">Codigo del Curso:</label>
@@ -119,7 +121,7 @@ class RegistroCurso extends React.Component {
             </select>
             <div style={{ marginBottom: "20px" }}></div>
             <input type="submit" className="button" value="Guardar" />
-            <input type="submit" className="button" value="Eliminar" />
+           {/* <input type="submit" className="button" value="Eliminar" /> */}
           </form>
         </div>
       </div>
