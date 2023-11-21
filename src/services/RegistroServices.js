@@ -50,11 +50,34 @@ export const guardarProfesor = async (data,config, successCallback, errorCallbac
   export const getGrupos = async (iddocument, config, successCallback, errorCallback) => {
     const options = {
       method: "GET",
-      url: `${Grupo_API_BASE_URL}/groups/${iddocument}`,
+      url: `${Grupo_API_BASE_URL}/groups/byTeacher/${iddocument}`,
       headers: { 
         "Content-type": "application/json",
         ...config.headers
       },
+    };
+    await axios.request(options).then(successCallback).catch(errorCallback);
+  };
+
+  export const getActividades = async (grupoId, config, successCallback, errorCallback) => {
+    const options = {
+      method: "GET",
+      url: `${Grupo_API_BASE_URL}/activities/${grupoId}`,
+      headers: { 
+        "Content-type": "application/json",
+        ...config.headers
+      },
+    };
+    await axios.request(options).then(successCallback).catch(errorCallback);
+  };
+
+  export const guardarActividad = async (data, config,successCallback, errorCallback) => {
+    const options = {
+      method: "POST",
+      url: `${Grupo_API_BASE_URL}/activities`,
+      headers: { "Content-type": "application/json" ,
+      ...config.headers },
+      data,
     };
     await axios.request(options).then(successCallback).catch(errorCallback);
   };

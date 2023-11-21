@@ -1,18 +1,47 @@
 import React from 'react';
 import './styles/styles.css';
+import { getActividades } from '../../services/RegistroServices';
+import { guardarActividad} from '../../services/RegistroServices';
+
 
 class IngresarActividades extends React.Component {
+
   constructor(props) {
     super(props);
     this.state = {
-      fecha: '',
-      descripcion: '',
-      tiempo: '',
-      tipo: '',
+      date: '',
+      description: '',
+      time: '',
+      typeActivity: '',
       errors: {},
       actividades: []
     };
   }
+
+  componentDidMount() {
+    this.fetchData();
+  }
+
+  fetchData = async () => {
+    const grupoId = localStorage.getItem('selectedId');
+
+    const token = localStorage.getItem('jWttoken');
+      if (!token) {
+        console.error('No se encontró el token');
+        return;
+      }
+  
+      const config = {
+        headers: { Authorization: `Bearer ${token}` }
+      };
+
+    await getActividades(grupoId, config, (response) => {
+      console.log(response.data)
+      this.setState({ actividades: response.data }); 
+    }, (error) => {
+      console.error(error);
+    });
+  };
 
   handleInputChange = (event) => {
     this.setState({
@@ -23,34 +52,44 @@ class IngresarActividades extends React.Component {
   guardarActividad = (event) => {
     event.preventDefault();
 
-    const { fecha, descripcion, tiempo, tipo } = this.state;
+    const { date, description, time, typeActivity } = this.state;
     let errors = {};
 
-    if (!fecha) {
-      errors.fecha = 'Por favor seleccione una fecha';
+    if (!date) {
+      errors.date = 'Por favor seleccione una fecha';
     }
-    if (!descripcion) {
-      errors.descripcion = 'Por favor ingrese una descripción';
+    if (!description) {
+      errors.description = 'Por favor ingrese una descripción';
     }
-    if (!tiempo) {
-      errors.tiempo = 'Por favor ingrese un tiempo';
+    if (!time) {
+      errors.time = 'Por favor ingrese un tiempo';
     }
-    if (!tipo) {
-      errors.tipo = 'Por favor seleccione un tipo de actividad';
+    if (!typeActivity) {
+      errors.tipeActivity = 'Por favor seleccione un tipo de actividad';
     }
 
-    if (Object.keys(errors).length > 0) {
-      this.setState({ errors });
-    } else {
+   
+      const group = localStorage.getItem('selectedId')
+      const actividad = { date, description, time, typeActivity, group};
+      const token = localStorage.getItem('jWttoken');
+      const config = {
+      headers: { Authorization: `Bearer ${token}` } };
+      console.log(actividad);
+
+      guardarActividad(actividad, config, (response) => {
+      console.log(response.data);
+    }, (error) => {
+      console.error(error);
+    });
       this.setState(prevState => ({
-        actividades: [...prevState.actividades, { fecha, descripcion, tiempo, tipo }],
-        fecha: '',
-        descripcion: '',
-        tiempo: '',
-        tipo: '',
+        actividades: [...prevState.actividades, { date, description, time, typeActivity }],
+        date: '',
+        description: '',
+        time: '',
+        typeActivity: '',
         errors: {}
       }));
-    }
+    
   }
 
   render() {
@@ -62,22 +101,22 @@ class IngresarActividades extends React.Component {
           <h3>Registro Actividad</h3>
           <form method="post" name="userRegistrationForm" onSubmit={this.guardarActividad} >
             <label className="center-label">Fecha:</label>
-            <input type="datetime-local" className="custom-search-input"  name="fecha" value={this.state.fecha} onChange={this.handleInputChange} />
-            {errors.fecha && <div style={{ color: 'red' }}>{errors.fecha}</div>}
+            <input type="date" className="custom-search-input"  name="date" value={this.state.date} onChange={this.handleInputChange} />
+            {errors.date && <div style={{ color: 'red' }}>{errors.date}</div>}
             <label className="center-label" >Descripción de la Actividad:</label>
-            <input type="text" className="custom-search-input"  name="descripcion" value={this.state.descripcion} onChange={this.handleInputChange} />
-            {errors.descripcion && <div style={{ color: 'red' }}>{errors.descripcion}</div>}
+            <input type="text" className="custom-search-input"  name="description" value={this.state.description} onChange={this.handleInputChange} />
+            {errors.description && <div style={{ color: 'red' }}>{errors.description}</div>}
             <label className="center-label">Tiempo:</label>
-            <input type="number"  className="custom-search-input"  name="tiempo" value={this.state.tiempo} onChange={this.handleInputChange} />  
-            {errors.tiempo && <div style={{ color: 'red' }}>{errors.tiempo}</div>}
+            <input type="number"  className="custom-search-input"  name="time" value={this.state.time} onChange={this.handleInputChange} />  
+            {errors.time && <div style={{ color: 'red' }}>{errors.time}</div>}
             <label className="center-label">Tipo de actividad:</label>
-            <select name="tipo"  style={{ height: "40px" }}  value={this.state.tipo}  onChange={this.handleInputChange}>
+            <select name="typeActivity"  style={{ height: "40px" }}  value={this.state.typeActivity}  onChange={this.handleInputChange}>
                 <option value="">Selecciona un tipo</option>
-                <option value="CLASE VIRTUAL">CLASE VIRTUAL</option>
-                <option value="ASESORIA VIRTUAL">ASESORIA VIRTUAL</option>
-                <option value="CLASE PRESENCIAL">CLASE PRESENCIAL</option>
+                <option value="1">CLASE VIRTUAL</option>
+                <option value="2">ASESORIA VIRTUAL</option>
+                <option value="3">CLASE PRESENCIAL</option>
             </select>
-            {errors.tipo && <div style={{ color: 'red' }}>{errors.tipo}</div>}
+            {errors.typeActivity && <div style={{ color: 'red' }}>{errors.typeActivity}</div>}
             <div style={{ marginBottom: "20px" }}></div>
             <input type="submit" className="button" value="Guardar Actividad" />
           </form>
@@ -96,10 +135,10 @@ class IngresarActividades extends React.Component {
             <tbody>
               {actividades.map((actividad, index) => (
                 <tr key={index}>
-                  <td>{actividad.fecha}</td>
-                  <td>{actividad.descripcion}</td>
-                  <td>{actividad.tiempo}</td>
-                  <td>{actividad.tipo}</td>
+                  <td>{actividad.date}</td>
+                  <td>{actividad.description}</td>
+                  <td>{actividad.time}</td>
+                  <td>{actividad.typeActivity}</td>
                 </tr>
               ))}
             </tbody>
@@ -111,69 +150,3 @@ class IngresarActividades extends React.Component {
 }
 
 export default IngresarActividades;
-
-  
-
-
-    /*
-  constructor(props) {
-    super(props);
-    this.state = {
-      actividades: []
-    };
-  }
-
-  agregarActividad = () => {
-    this.setState(prevState => ({
-      actividades: [...prevState.actividades, { fecha: '', descripcion: '', tiempo: '', tipo: '' }]
-    }));
-  }
-
-  handleInputChange = (event, index) => {
-    const target = event.target;
-    const value = target.value;
-    const name = target.name;
-
-    this.setState(prevState => {
-      const newActividades = [...prevState.actividades];
-      newActividades[index][name] = value;
-      return { actividades: newActividades };
-    });
-  }
-
-  
-    render() {
-      return (
-        <div className="containers">
-          <button onClick={this.agregarActividad}>Agregar actividad</button>
-          <table>
-            <thead>
-              <tr>
-                <th>Fecha</th>
-                <th>Descripción</th>
-                <th>Tiempo</th>
-                <th>Tipo de actividad</th>
-              </tr>
-            </thead>
-            <tbody>
-              {this.state.actividades.map((actividad, index) => (
-                <tr key={index}>
-                  <td><input type="datetime-local" name="fecha" value={actividad.fecha} onChange={(event) => this.handleInputChange(event, index)} /></td>
-                  <td><input type="text" className="descripcion" name="descripcion" value={actividad.descripcion} onChange={(event) => this.handleInputChange(event, index)} /></td>
-                  <td><input type="number" className="tiempo" name="tiempo" value={actividad.tiempo} onChange={(event) => this.handleInputChange(event, index)} /></td>
-                  <td>
-                    <select name="tipo" value={actividad.tipo} onChange={(event) => this.handleInputChange(event, index)}>
-                      <option value="">Selecciona un tipo</option>
-                      <option value="CLASE VIRTUAL">CLASE VIRTUAL</option>
-                      <option value="ASESORIA VIRTUAL">ASESORIA VIRTUAL</option>
-                      <option value="CLASE PRESENCIAL">CLASE PRESENCIAL</option>
-                    </select>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      );
-    }
-      */
