@@ -1,7 +1,5 @@
 import React from 'react';
 import './styles/styles.css';
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
 import { guardarCurso } from '../../services/RegistroServices';
 
 
@@ -37,17 +35,29 @@ class RegistroCurso extends React.Component {
     if (this.validateForm()) {
       const userData = this.state.fields;
       console.log('Datos del formulario:', userData);
+      
+      const token = localStorage.getItem('jWttoken');
+      console.log('token:', token);
+
+      if (!token) {
+        console.error('No se encontró el token');
+        return;
+      }
+  
+      const config = {
+        headers: { Authorization: `Bearer ${token}` }
+      };
       await guardarCurso(
         userData,
-      (response) => {
-        console.log(response.data);
-        alert('Datos guardados con éxito');
-      },
-      (error) => {
-        console.error(error);
-        alert('El codigo de curso ya se encuentra registrado por favor ingrese uno diferente');
-
-      }
+        config,
+        (response) => {
+          console.log(response.data);
+          alert('Datos guardados con éxito');
+        },
+        (error) => {
+          console.error(error);
+          alert('El codigo de curso ya se encuentra registrado por favor ingrese uno diferente');
+        }
       );
       this.setState({
         fields: {

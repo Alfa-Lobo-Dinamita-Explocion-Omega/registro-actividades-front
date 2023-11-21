@@ -1,7 +1,5 @@
 import React from 'react';
 import './styles/styles.css';
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
 import { guardarProfesor } from '../../services/RegistroServices';
 
 
@@ -38,8 +36,18 @@ class FormularioRegistro extends React.Component {
     e.preventDefault();
     if (this.validateForm()) {
       const userData = this.state.fields;
+      const token = localStorage.getItem('jWttoken');
+      if (!token) {
+        console.error('No se encontró el token');
+        return;
+      }
+  
+      const config = {
+        headers: { Authorization: `Bearer ${token}` }
+      };
       await guardarProfesor(
         userData,
+        config,
       (response) => {
         console.log(response.data);
         alert('Datos guardados con éxito');

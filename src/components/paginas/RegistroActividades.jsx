@@ -1,63 +1,48 @@
-import React from 'react';
 import './styles/styles.css';
 import { useNavigate } from 'react-router-dom';
+import { getGrupos } from '../../services/RegistroServices';
+import React, { useEffect, useState } from 'react';
+import { jwtDecode } from "jwt-decode";
+
+
 
 const RegistroActividades = () => {
   const Navigate = useNavigate();
+  const [data, setData] = useState([]);
+  useEffect(() => {
+
+
+    const fetchData = async () => {
+
+      const token = localStorage.getItem('jWttoken');
+      if (!token) {
+        console.error('No se encontró el token');
+        return;
+      }
+
+      let decoded = jwtDecode (token);
+
+      const iddocument = decoded.id;
+      const config = {
+        headers: { Authorization: `Bearer ${token}` }
+      };
+      await getGrupos(iddocument, config, (response) => {
+        setData(response.data); // Actualiza el estado con los datos obtenidos
+      }, (error) => {
+        console.error(error);
+      });
+    };
+
+    fetchData();
+  }, []); // Añade tus dependencias si las hay
+
+  // El resto de tu código...
 
   const handleAddActivities = (id) => {
-    // Aquí puedes guardar el ID donde prefieras, por ejemplo en el LocalStorage
     localStorage.setItem('selectedId', id);
-
-    // Redirige a la página 'ingresaractividades'
     Navigate(`/IngresarActividades/${id}`);
   }
 
-    const data = [
-
-          {
-            "id": 123,
-            "group_number": 1,
-            "hours_worked": 40,
-            "modality": "online",
-            "schedule": "LW 9:00-17:00",
-            "semester": "2023-2",
-            "course_code": "CS101",
-            "teacher_id_number": 456
-          },
-          {
-            "id": 124,
-            "group_number": 2,
-            "hours_worked": 30,
-            "modality": "presencial",
-            "schedule": "MJ 10:00-16:00",
-            "semester": "2023-2",
-            "course_code": "CS102",
-            "teacher_id_number": 789
-          },
-          {
-            "id": 125,
-            "group_number": 3,
-            "hours_worked": 35,
-            "modality": "online",
-            "schedule": "VS 11:00-18:00",
-            "semester": "2023-2",
-            "course_code": "CS103",
-            "teacher_id_number": 456
-          },
-          {
-            "id": 126,
-            "group_number": 4,
-            "hours_worked": 32,
-            "modality": "presencial",
-            "schedule": "LM 12:00-20:00",
-            "semester": "2023-2",
-            "course_code": "CS104",
-            "teacher_id_number": 321
-          }
-        
-        
-    ];
 
     return (
       <div className="table-container">
@@ -78,12 +63,12 @@ const RegistroActividades = () => {
                   {data.map((item, index) => (
                       <tr key={index}>
                           <td>{item.id}</td>
-                          <td>{item.group_number}</td>
-                          <td>{item.hours_worked}</td>
+                          <td>{item.groupNumber}</td>
+                          <td>{item.hoursWorked}</td>
                           <td>{item.modality}</td>
                           <td>{item.schedule}</td>
                           <td>{item.semester}</td>
-                          <td>{item.course_code}</td>
+                          <td>{item.courseCode}</td>
                           <td><button onClick={() => handleAddActivities(item.id)} >Agregar actividades</button></td>
                       </tr>
                   ))}

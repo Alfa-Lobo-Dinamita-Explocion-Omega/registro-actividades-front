@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './styles/styles.css';
 import imagenfondo from '../../assets/login.png';
@@ -35,7 +34,7 @@ const Inicio = () => {
 
     login({ email, password }, 
       (response) => {
-        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('jWttoken', response.data.jWttoken);
         navigate('/RegistroActividades');
       }, 
       (error) => {

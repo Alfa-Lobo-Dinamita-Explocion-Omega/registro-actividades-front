@@ -62,8 +62,18 @@ class RegistroGrupo extends React.Component {
     if (this.validateForm()) {
       const userData = this.state.fields;
       console.log('Datos del formulario:', userData);
+      const token = localStorage.getItem('jWttoken');
+      if (!token) {
+        console.error('No se encontró el token');
+        return;
+      }
+  
+      const config = {
+        headers: { Authorization: `Bearer ${token}` }
+      };
       await guardarGrupo(
         userData,
+        config,
       (response) => {
         console.log(response.data);
         alert('Datos guardados con éxito');
